@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -72,14 +73,13 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
 
         ImageLoader imageLoader = ImageLoaderHelper.getInstance(holder.itemView.getContext()).getImageLoader();
         String imageUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);
-        holder.thumbnailView.setImageUrl(imageUrl, imageLoader);
-        holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
         imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
             @Override
             public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
                 Bitmap bitmap = imageContainer.getBitmap();
                 if (bitmap != null) {
+                    holder.thumbnailView.setImageBitmap(bitmap);
                     final int defaultColor = ContextCompat.getColor(holder.itemView.getContext(),
                             R.color.cardview_dark_background);
                     Palette p = Palette.from(bitmap).generate();
@@ -101,7 +101,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     }
 
     static class ArticleViewHolder extends RecyclerView.ViewHolder {
-        DynamicHeightNetworkImageView thumbnailView;
+        ImageView thumbnailView;
         TextView titleView;
         TextView subtitleView;
 
