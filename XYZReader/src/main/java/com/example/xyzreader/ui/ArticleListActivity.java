@@ -9,6 +9,8 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +33,7 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.example.xyzreader.utils.NetworkUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,6 +48,8 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.main_content)
+    CoordinatorLayout clMainContent;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
@@ -113,6 +118,13 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onRefresh() {
-        startService(new Intent(this, UpdaterService.class));
+        if (NetworkUtils.isConnected(this)) {
+            startService(new Intent(this, UpdaterService.class));
+        } else {
+            Snackbar.make(clMainContent, R.string.error_network, Snackbar.LENGTH_LONG).show();
+            mIsRefreshing = false;
+            updateRefreshingUI();
+        }
+
     }
 }

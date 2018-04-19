@@ -9,4 +9,6 @@
 
     <string name="up">Up</string>
 
+    <string name="error_network">The network is not available. Please check the internet connection.</string>
+
 </resources>
