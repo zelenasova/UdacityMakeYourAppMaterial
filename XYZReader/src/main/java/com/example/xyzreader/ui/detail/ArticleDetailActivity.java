@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui.detail;
 
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
@@ -27,11 +28,11 @@ public class ArticleDetailActivity extends AppCompatActivity
     public static final String EXTRA_ID = "extra_id";
     public static final String EXTRA_PALETTE_COLOR = "extra_palette_color";
 
-    public static void startArticleDetailActivity(Context context, long id, int paletteColor) {
+    public static void startArticleDetailActivity(Context context, long id, int paletteColor, ActivityOptions options) {
         Intent intent = new Intent(context, ArticleDetailActivity.class);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_PALETTE_COLOR, paletteColor);
-        context.startActivity(intent);
+        context.startActivity(intent, options.toBundle());
     }
 
     private Cursor mCursor;
@@ -43,6 +44,8 @@ public class ArticleDetailActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
+
+        postponeEnterTransition();
 
         getLoaderManager().initLoader(0, null, this);
 

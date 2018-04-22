@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -110,6 +111,10 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
+        String transitionName = getString(R.string.transition) + mItemId;
+        System.out.println(transitionName);
+        mPhotoView.setTransitionName(transitionName);
+
         ibActionUp.setOnClickListener(view -> getActivity().onBackPressed());
 
         mStatusBarColorDrawable = new ColorDrawable(0);
@@ -179,7 +184,9 @@ public class ArticleDetailFragment extends Fragment implements
                                 + "</font>"));
 
             }
-            //bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+            String body = mCursor.getString(ArticleLoader.Query.BODY).substring(0, 1800);
+            body = body.replaceAll("(\r\n|\n)", " ");
+            bodyView.setText(Html.fromHtml(body));
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -216,6 +223,9 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+
+        startPostponedEnterTransition();
+
         if (!isAdded()) {
             if (cursor != null) {
                 cursor.close();
@@ -230,6 +240,17 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         bindViews();
+    }
+
+    public void startPostponedEnterTransition() {
+        mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                getActivity().startPostponedEnterTransition();
+                return true;
+            }
+        });
     }
 
     @Override

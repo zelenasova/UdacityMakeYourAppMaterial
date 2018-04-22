@@ -1,5 +1,7 @@
 package com.example.xyzreader.ui.list;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
@@ -47,8 +49,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_article, parent, false);
         final ArticleViewHolder vh = new ArticleViewHolder(view);
         view.setOnClickListener(view1 -> {
-            long id = getItemId(vh.getAdapterPosition());
-            ArticleDetailActivity.startArticleDetailActivity(parent.getContext(), id, mMutedColor);
+            int position = vh.getAdapterPosition();
+            long id = getItemId(position);
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(
+                            (Activity)parent.getContext(),
+                            vh.thumbnailView,
+                            vh.thumbnailView.getTransitionName()
+                    );
+            ArticleDetailActivity.startArticleDetailActivity(parent.getContext(), id, mMutedColor, options);
         });
         return vh;
     }
@@ -68,6 +77,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
         Date publishedDate = parsePublishedDate();
         holder.subtitleView.setText(StringUtil.getSubtitle(mCursor, publishedDate, START_OF_EPOCH));
+
+        String transitionName = holder.itemView.getContext().getString(R.string.transition) + getItemId(position);
+        holder.thumbnailView.setTransitionName(transitionName);
 
         ImageLoader imageLoader = ImageLoaderHelper.getInstance(holder.itemView.getContext()).getImageLoader();
         String imageUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);
