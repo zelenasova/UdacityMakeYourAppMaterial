@@ -1,15 +1,10 @@
-package com.example.xyzreader.ui;
+package com.example.xyzreader.ui.list;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +15,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
+import com.example.xyzreader.ui.common.ImageLoaderHelper;
+import com.example.xyzreader.ui.detail.ArticleDetailActivity;
 import com.example.xyzreader.utils.StringUtil;
 
 import java.text.ParseException;
