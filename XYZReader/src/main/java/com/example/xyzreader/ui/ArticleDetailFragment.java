@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -60,6 +62,8 @@ public class ArticleDetailFragment extends Fragment implements
     CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.action_up)
     ImageButton ibActionUp;
+    @BindView(R.id.meta_bar)
+    LinearLayout llMetaBar;
 
     private Cursor mCursor;
     private long mItemId;
@@ -184,7 +188,11 @@ public class ArticleDetailFragment extends Fragment implements
                         public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
+                                int defaultColor = ContextCompat.getColor(getActivity(),
+                                        R.color.cardview_dark_background);
+                                Palette.from(bitmap).generate(p -> {
+                                    llMetaBar.setBackgroundColor(p.getDarkMutedColor(defaultColor));
+                                });
                                 mPhotoView.setImageBitmap(bitmap);
                                 updateStatusBar();
                             }

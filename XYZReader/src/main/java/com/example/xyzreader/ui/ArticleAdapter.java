@@ -3,6 +3,7 @@ package com.example.xyzreader.ui;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +33,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
     private Cursor mCursor;
+    int mMutedColor;
 
     public ArticleAdapter(Cursor cursor) {
         mCursor = cursor;
@@ -49,8 +51,8 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_article, parent, false);
         final ArticleViewHolder vh = new ArticleViewHolder(view);
         view.setOnClickListener(view1 -> {
-            parent.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
-                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+            long id = getItemId(vh.getAdapterPosition());
+            ArticleDetailActivity.startArticleDetailActivity(parent.getContext(), id, mMutedColor);
         });
         return vh;
     }
@@ -80,11 +82,13 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
                 Bitmap bitmap = imageContainer.getBitmap();
                 if (bitmap != null) {
                     holder.thumbnailView.setImageBitmap(bitmap);
-                    final int defaultColor = ContextCompat.getColor(holder.itemView.getContext(),
+                    int defaultColor = ContextCompat.getColor(holder.itemView.getContext(),
                             R.color.cardview_dark_background);
-                    Palette p = Palette.from(bitmap).generate();
-                    int mMutedColor = p.getDarkMutedColor(defaultColor);
-                    holder.itemView.setBackgroundColor(mMutedColor);
+                    Palette.from(bitmap).generate(p -> {
+                        mMutedColor = p.getDarkMutedColor(defaultColor);
+                        holder.itemView.setBackgroundColor(mMutedColor);
+                    });
+
                 }
             }
 

@@ -3,6 +3,8 @@ package com.example.xyzreader.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
@@ -25,6 +27,16 @@ import com.example.xyzreader.data.ItemsContract;
  */
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String EXTRA_ID = "extra_id";
+    public static final String EXTRA_PALETTE_COLOR = "extra_palette_color";
+
+    public static void startArticleDetailActivity(Context context, long id, int paletteColor) {
+        Intent intent = new Intent(context, ArticleDetailActivity.class);
+        intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_PALETTE_COLOR, paletteColor);
+        context.startActivity(intent);
+    }
 
     private Cursor mCursor;
     private long mStartId;
@@ -56,8 +68,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         });
 
         if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
+            if (getIntent() != null) {
+                mStartId = getIntent().getLongExtra(EXTRA_ID, 0);
             }
         }
     }
