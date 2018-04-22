@@ -112,7 +112,6 @@ public class ArticleDetailFragment extends Fragment implements
         ButterKnife.bind(this, mRootView);
 
         String transitionName = getString(R.string.transition) + mItemId;
-        System.out.println(transitionName);
         mPhotoView.setTransitionName(transitionName);
 
         ibActionUp.setOnClickListener(view -> getActivity().onBackPressed());

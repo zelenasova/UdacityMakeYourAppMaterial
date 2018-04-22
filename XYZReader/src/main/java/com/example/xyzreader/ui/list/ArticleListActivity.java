@@ -42,10 +42,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
         getLoaderManager().initLoader(0, null, this);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-
-        if (savedInstanceState == null) {
-            onRefresh();
-        }
     }
 
     @Override
@@ -82,6 +78,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        if (cursor.getCount() == 0) {
+            loadDataFromServer();
+        }
         ArticleAdapter adapter = new ArticleAdapter(cursor);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -98,6 +97,10 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onRefresh() {
+        loadDataFromServer();
+    }
+
+    public void loadDataFromServer() {
         if (NetworkUtils.isConnected(this)) {
             startService(new Intent(this, UpdaterService.class));
         } else {
