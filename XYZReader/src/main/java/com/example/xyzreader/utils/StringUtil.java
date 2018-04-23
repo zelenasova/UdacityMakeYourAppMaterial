@@ -36,4 +36,25 @@ public class StringUtil {
 
     }
 
+    public static Spanned getByline(Cursor cursor, Date publishedDate, GregorianCalendar START_OF_EPOCH) {
+        if (!publishedDate.before(START_OF_EPOCH.getTime())) {
+            return Html.fromHtml(
+                    DateUtils.getRelativeTimeSpanString(
+                            publishedDate.getTime(),
+                            System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                            DateUtils.FORMAT_ABBREV_ALL).toString()
+                            + " by <font color='#ffffff'>"
+                            + cursor.getString(ArticleLoader.Query.AUTHOR)
+                            + "</font>");
+
+        } else {
+            return Html.fromHtml(
+                    new SimpleDateFormat().format(publishedDate) + " by <font color='#ffffff'>"
+                            + cursor.getString(ArticleLoader.Query.AUTHOR)
+                            + "</font>");
+
+        }
+
+    }
+
 }

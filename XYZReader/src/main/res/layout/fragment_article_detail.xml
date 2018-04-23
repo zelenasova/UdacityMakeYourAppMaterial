@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
             app:elevation="4dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
             app:title="@string/app_name"
             app:toolbarId="@+id/toolbar">
 
@@ -107,9 +107,10 @@
 
             <TextView
                 android:id="@+id/article_body"
-                style="@style/TextAppearance.AppCompat.Body1"
+                style="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="@fraction/detail_body_line_spacing_multiplier"
                 android:paddingLeft="@dimen/detail_inner_horiz_margin"
                 android:paddingRight="@dimen/detail_inner_horiz_margin"
                 android:textColorLink="@color/colorAccent" />

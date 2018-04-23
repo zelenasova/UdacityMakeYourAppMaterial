@@ -15,6 +15,7 @@ import java.util.GregorianCalendar;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
@@ -37,6 +38,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.ui.common.ImageLoaderHelper;
+import com.example.xyzreader.utils.StringUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,17 +65,15 @@ public class ArticleDetailFragment extends Fragment implements
     ImageButton ibActionUp;
     @BindView(R.id.meta_bar)
     LinearLayout llMetaBar;
+    @BindView(R.id.fab_share)
+    FloatingActionButton fabShare;
 
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
-    private ColorDrawable mStatusBarColorDrawable;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
-    // Use default locale format
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
-    // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -107,7 +107,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
@@ -116,26 +116,8 @@ public class ArticleDetailFragment extends Fragment implements
 
         ibActionUp.setOnClickListener(view -> getActivity().onBackPressed());
 
-        mStatusBarColorDrawable = new ColorDrawable(0);
-
-        mRootView.findViewById(R.id.fab_share).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("text/plain")
-                        .setText("Some sample text")
-                        .getIntent(), getString(R.string.action_share)));
-            }
-        });
-
         bindViews();
-        updateStatusBar();
         return mRootView;
-    }
-
-    private void updateStatusBar() {
-        int color = 0;
-        mStatusBarColorDrawable.setColor(color);
     }
 
     private Date parsePublishedDate() {
@@ -162,30 +144,20 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.animate().alpha(1);
 
             String title = mCursor.getString(ArticleLoader.Query.TITLE);
-            collapsingToolbar.setTitle(title);
+            collapsingToolbar.setTitle(null);
             titleView.setText(title);
             Date publishedDate = parsePublishedDate();
-            if (!publishedDate.before(START_OF_EPOCH.getTime())) {
-                bylineView.setText(Html.fromHtml(
-                        DateUtils.getRelativeTimeSpanString(
-                                publishedDate.getTime(),
-                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                                DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
 
-            } else {
-                // If date is before 1902, just show the string
-                bylineView.setText(Html.fromHtml(
-                        outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
-
-            }
-            String body = mCursor.getString(ArticleLoader.Query.BODY).substring(0, 1800);
-            body = body.replaceAll("(\r\n|\n)", " ");
+            bylineView.setText(StringUtil.getByline(mCursor, publishedDate, START_OF_EPOCH));
+            final String body = mCursor.getString(ArticleLoader.Query.BODY).substring(0, 1800).
+                    replaceAll("(\r\n|\n)", " ");
             bodyView.setText(Html.fromHtml(body));
+
+            fabShare.setOnClickListener(view -> startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
+                    .setType("text/plain")
+                    .setText(title + "/n" + publishedDate + "/n" + body)
+                    .getIntent(), getString(R.string.action_share))));
+
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -198,7 +170,6 @@ public class ArticleDetailFragment extends Fragment implements
                                     llMetaBar.setBackgroundColor(p.getDarkMutedColor(defaultColor));
                                 });
                                 mPhotoView.setImageBitmap(bitmap);
-                                updateStatusBar();
                             }
                         }
 
@@ -210,7 +181,7 @@ public class ArticleDetailFragment extends Fragment implements
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
-            bylineView.setText("N/A" );
+            bylineView.setText("N/A");
             bodyView.setText("N/A");
         }
     }
