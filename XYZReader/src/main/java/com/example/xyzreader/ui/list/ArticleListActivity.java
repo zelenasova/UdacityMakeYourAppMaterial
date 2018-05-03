@@ -10,18 +10,26 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.View;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.UpdaterService;
 import com.example.xyzreader.utils.NetworkUtils;
 
+import java.util.List;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.xyzreader.ui.detail.ArticleDetailActivity.EXTRA_ENTER_POSITION;
+import static com.example.xyzreader.ui.detail.ArticleDetailActivity.EXTRA_EXIT_POSITION;
 
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
@@ -34,6 +42,9 @@ public class ArticleListActivity extends AppCompatActivity implements
     RecyclerView mRecyclerView;
 
     private boolean mIsRefreshing = false;
+    private int exitPosition;
+    private int enterPosition;
+    boolean isReenter = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +53,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
         getLoaderManager().initLoader(0, null, this);
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        setExitSharedElementCallback(mCallback);
     }
 
     @Override
@@ -55,6 +67,16 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        if (resultCode == RESULT_OK && data != null) {
+            enterPosition = data.getIntExtra(EXTRA_ENTER_POSITION, enterPosition);
+            exitPosition = data.getIntExtra(EXTRA_EXIT_POSITION, enterPosition);
+            isReenter = true;
+        }
     }
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
@@ -108,6 +130,23 @@ public class ArticleListActivity extends AppCompatActivity implements
             mIsRefreshing = false;
             updateRefreshingUI();
         }
-
     }
+
+    private final android.app.SharedElementCallback mCallback = new android.app.SharedElementCallback() {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (isReenter && exitPosition != enterPosition) {
+                String newTransitionName = getString(R.string.transition) + exitPosition;
+                View newSharedElement = mRecyclerView.findViewWithTag(newTransitionName);
+                if (newSharedElement != null) {
+                    names.clear();
+                    names.add(newTransitionName);
+                    sharedElements.clear();
+                    sharedElements.put(newTransitionName, newSharedElement);
+                }
+                isReenter = false;
+            }
+        }
+    };
+
 }

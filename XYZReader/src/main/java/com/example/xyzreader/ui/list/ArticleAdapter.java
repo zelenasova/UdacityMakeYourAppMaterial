@@ -57,7 +57,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
                             vh.thumbnailView,
                             vh.thumbnailView.getTransitionName()
                     );
-            ArticleDetailActivity.startArticleDetailActivity(parent.getContext(), id, mMutedColor, options);
+            ArticleDetailActivity.startArticleDetailActivity(parent.getContext(), id, position, mMutedColor, options);
         });
         return vh;
     }
@@ -78,8 +78,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         Date publishedDate = parsePublishedDate();
         holder.subtitleView.setText(StringUtil.getSubtitle(mCursor, publishedDate, START_OF_EPOCH));
 
-        String transitionName = holder.itemView.getContext().getString(R.string.transition) + getItemId(position);
+        String transitionName = holder.itemView.getContext().getString(R.string.transition) + position;
         holder.thumbnailView.setTransitionName(transitionName);
+        holder.thumbnailView.setTag(transitionName);
 
         ImageLoader imageLoader = ImageLoaderHelper.getInstance(holder.itemView.getContext()).getImageLoader();
         String imageUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);

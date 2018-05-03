@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui.detail;
 
+import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -11,13 +12,19 @@ import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -27,18 +34,23 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     public static final String EXTRA_ID = "extra_id";
     public static final String EXTRA_PALETTE_COLOR = "extra_palette_color";
+    public static final String EXTRA_EXIT_POSITION = "exit_position";
+    public static final String EXTRA_ENTER_POSITION = "enter_position";
 
-    public static void startArticleDetailActivity(Context context, long id, int paletteColor, ActivityOptions options) {
+    public static void startArticleDetailActivity(Context context, long id, int startPosition, int paletteColor, ActivityOptions options) {
         Intent intent = new Intent(context, ArticleDetailActivity.class);
         intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_ENTER_POSITION, startPosition);
         intent.putExtra(EXTRA_PALETTE_COLOR, paletteColor);
         context.startActivity(intent, options.toBundle());
     }
 
     private Cursor mCursor;
     private long mStartId;
+    private int enterPosition;
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
+    private ArticleDetailFragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +78,39 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
         });
 
+        enterPosition = getIntent().getIntExtra(EXTRA_ENTER_POSITION, 0);
+
         if (savedInstanceState == null) {
             if (getIntent() != null) {
                 mStartId = getIntent().getLongExtra(EXTRA_ID, 0);
             }
         }
+    }
+
+    @Override
+    public void finishAfterTransition() {
+        int currentPosition = mPager.getCurrentItem();
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_ENTER_POSITION, enterPosition);
+        intent.putExtra(EXTRA_EXIT_POSITION, currentPosition);
+        setResult(RESULT_OK, intent);
+        if (enterPosition != currentPosition) {
+            setSharedElementCallback();
+        }
+        super.finishAfterTransition();
+    }
+
+    private void setSharedElementCallback() {
+        setEnterSharedElementCallback(new SharedElementCallback() {
+            @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                ImageView sharedElement = currentFragment.getmPhotoView();
+                names.clear();
+                sharedElements.clear();
+                names.add(sharedElement.getTransitionName());
+                sharedElements.put(sharedElement.getTransitionName(), sharedElement);
+            }
+        });
     }
 
     @Override
@@ -115,13 +155,15 @@ public class ArticleDetailActivity extends AppCompatActivity
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
+            currentFragment = (ArticleDetailFragment) object;
 
         }
 
         @Override
         public Fragment getItem(int position) {
             mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID),
+                    enterPosition, position);
         }
 
         @Override

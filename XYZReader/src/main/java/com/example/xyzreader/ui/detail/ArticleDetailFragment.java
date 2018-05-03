@@ -48,6 +48,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     private static final String TAG = "ArticleDetailFragment";
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_POSITION = "position";
+    public static final String ARG_ENTER_POSITION = "enter_position";
 
     @BindView(R.id.photo)
     ImageView mPhotoView;
@@ -70,6 +72,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     private Cursor mCursor;
     private long mItemId;
+    private int enterPosition;
+    private int position;
     private View mRootView;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -82,9 +86,11 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(long itemId, int enterPosition, int position) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
+        arguments.putInt(ARG_POSITION, position);
+        arguments.putInt(ARG_ENTER_POSITION, enterPosition);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -94,8 +100,12 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        setSharedElementReturnTransition(null);
+
+        if (getArguments() != null) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
+            position = getArguments().getInt(ARG_POSITION);
+            enterPosition = getArguments().getInt(ARG_ENTER_POSITION);
         }
     }
 
@@ -110,10 +120,8 @@ public class ArticleDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
-
-        String transitionName = getString(R.string.transition) + mItemId;
+        String transitionName = getString(R.string.transition) + position;
         mPhotoView.setTransitionName(transitionName);
-
         ibActionUp.setOnClickListener(view -> getActivity().onBackPressed());
 
         bindViews();
@@ -213,14 +221,22 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     public void startPostponedEnterTransition() {
-        mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
-                getActivity().startPostponedEnterTransition();
-                return true;
-            }
-        });
+        if (position == enterPosition) {
+            System.out.println("startPostponedEnterTransition");
+            mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().startPostponedEnterTransition();
+                    return true;
+                }
+            });
+        }
+
+    }
+
+    public ImageView getmPhotoView() {
+        return mPhotoView;
     }
 
     @Override

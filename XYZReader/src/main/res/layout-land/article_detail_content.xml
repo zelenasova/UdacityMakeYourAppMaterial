@@ -10,9 +10,10 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.CardView
-            android:layout_width="400dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="88dp"
+            android:layout_marginEnd="88dp"
             app:cardElevation="2dp">
 
             <LinearLayout
@@ -76,7 +77,8 @@
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:fabSize="normal"
-        app:layout_anchor="@id/app_bar"
+        app:layout_anchor="@id/toolbar_layout"
+        app:layout_behavior="com.example.xyzreader.ui.common.ScrollAnimationFab"
         app:layout_anchorGravity="bottom|right|end"
         app:pressedTranslationZ="12dp" />
 
