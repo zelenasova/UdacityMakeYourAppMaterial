@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -116,7 +117,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(null);
     }
 
-
     @Override
     public void onRefresh() {
         loadDataFromServer();
@@ -136,13 +136,13 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (isReenter && exitPosition != enterPosition) {
-                String newTransitionName = getString(R.string.transition) + exitPosition;
-                View newSharedElement = mRecyclerView.findViewWithTag(newTransitionName);
-                if (newSharedElement != null) {
+                String transitionName = getString(R.string.transition) + exitPosition;
+                ImageView sharedElement = mRecyclerView.findViewWithTag(transitionName);
+                if (sharedElement != null) {
                     names.clear();
-                    names.add(newTransitionName);
+                    names.add(transitionName);
                     sharedElements.clear();
-                    sharedElements.put(newTransitionName, newSharedElement);
+                    sharedElements.put(transitionName, sharedElement);
                 }
                 isReenter = false;
             }

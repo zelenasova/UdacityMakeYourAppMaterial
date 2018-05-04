@@ -4,12 +4,23 @@
     <dimen name="detail_body_text_size">22sp</dimen>
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
 
-    <dimen name="fab_elevation">2dp</dimen>
-    <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_press_translation_z">6dp</dimen>
+    <dimen name="card_view_horizontal_margin">88dp</dimen>
+
 
     <!-- list -->
     <dimen name="list_side_margin">4dp</dimen>
+    <dimen name="app_bar_height">256dp</dimen>
+    <dimen name="app_bar_overlap_top">128dp</dimen>
+    <dimen name="fab_elevation_normal">6dp</dimen>
+    <dimen name="fab_elevation_pressed">12dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="collapsing_layout_elevation">4dp</dimen>
+    <dimen name="card_view_margin">4dp</dimen>
+    <dimen name="image_up_padding">16dp</dimen>
+    <dimen name="medium_padding">16dp</dimen>
+    <dimen name="mini_padding">4dp</dimen>
+    <dimen name="subtitle_text_size">12sp</dimen>
     <integer name="list_column_count">2</integer>
-
 </resources>

@@ -222,7 +222,6 @@ public class ArticleDetailFragment extends Fragment implements
 
     public void startPostponedEnterTransition() {
         if (position == enterPosition) {
-            System.out.println("startPostponedEnterTransition");
             mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {

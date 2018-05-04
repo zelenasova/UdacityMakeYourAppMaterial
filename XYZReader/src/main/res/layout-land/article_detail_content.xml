@@ -6,15 +6,15 @@
         android:id="@+id/nsv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:behavior_overlapTop="128dp"
+        app:behavior_overlapTop="@dimen/app_bar_overlap_top"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="88dp"
-            android:layout_marginEnd="88dp"
-            app:cardElevation="2dp">
+            android:layout_marginStart="@dimen/card_view_horizontal_margin"
+            android:layout_marginEnd="@dimen/card_view_horizontal_margin"
+            app:cardElevation="@dimen/card_elevation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,8 +41,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed"
                         android:lineSpacingMultiplier="0.9"
+                        android:textColor="@android:color/white"
                         android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
-                        android:textColor="#fff"
                         android:textSize="@dimen/detail_title_text_size"
                         android:textStyle="bold" />
 
@@ -75,11 +75,11 @@
         android:contentDescription="@string/action_share"
         android:src="@drawable/ic_share"
         app:borderWidth="0dp"
-        app:elevation="6dp"
+        app:elevation="@dimen/fab_elevation_normal"
         app:fabSize="normal"
         app:layout_anchor="@id/toolbar_layout"
         app:layout_behavior="com.example.xyzreader.ui.common.ScrollAnimationFab"
         app:layout_anchorGravity="bottom|right|end"
-        app:pressedTranslationZ="12dp" />
+        app:pressedTranslationZ="@dimen/fab_elevation_pressed" />
 
 </merge>

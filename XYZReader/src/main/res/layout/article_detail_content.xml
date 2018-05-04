@@ -34,7 +34,7 @@
                     android:fontFamily="sans-serif-condensed"
                     android:lineSpacingMultiplier="0.9"
                     android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
-                    android:textColor="#fff"
+                    android:textColor="@android:color/white"
                     android:textSize="@dimen/detail_title_text_size"
                     android:textStyle="bold" />
 
@@ -67,11 +67,11 @@
         android:contentDescription="@string/action_share"
         android:src="@drawable/ic_share"
         app:borderWidth="0dp"
-        app:elevation="6dp"
+        app:elevation="@dimen/fab_elevation_normal"
         app:fabSize="normal"
         app:layout_anchor="@id/nsv"
         app:layout_anchorGravity="bottom|right|end"
         app:layout_behavior="com.example.xyzreader.ui.common.ScrollAnimationFab"
-        app:pressedTranslationZ="12dp" />
+        app:pressedTranslationZ="@dimen/fab_elevation_pressed" />
 
 </merge>
